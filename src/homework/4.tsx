@@ -4,20 +4,19 @@ import noop from 'lodash/noop';
 type MenuIds = 'first' | 'second' | 'last';
 type Menu = { id: MenuIds; title: string };
 
-// Додати тип Menu Selected
-
-type MenuSelected = {
-  selectedMenu: { id?: MenuIds };
+type SelectedMenu = {
+  selectedMenu: { id: MenuIds };
 };
 
-const MenuSelectedContext = createContext<MenuSelected>({
-  selectedMenu: {},
+//! Добрий день. Я не зовсім розібрався із цим завданням і не зовсім його зрозумів. Зробив редагування які ви вказали але з'явилися помилки
+
+const MenuSelectedContext = createContext<SelectedMenu>({
+  //! Помилка в selectedMenu: Property 'id' is missing in type 'SelectedMenu' but required in type '{ id: MenuIds; }'.ts(2741) 4.tsx(8, 19): 'id' is declared here. 4.tsx(8, 3): The expected type comes from property 'selectedMenu' which is declared here on type 'SelectedMenu'
+  selectedMenu: {} as SelectedMenu,
 });
 
-// Додайте тип MenuAction
-
 type MenuAction = {
-  onSelectedMenu: (menu: { id?: MenuIds }) => void;
+  onSelectedMenu: (menu: { id: MenuIds }) => void;
 };
 
 const MenuActionContext = createContext<MenuAction>({
@@ -25,14 +24,13 @@ const MenuActionContext = createContext<MenuAction>({
 });
 
 type PropsProvider = {
-  children: React.ReactNode; // Додати тип для children
+  children: React.ReactNode;
 };
 
 function MenuProvider({ children }: PropsProvider) {
-  // Додати тип для SelectedMenu він повинен містити { id }
-  const [selectedMenu, setSelectedMenu] = useState<
-    MenuSelected['selectedMenu']
-  >({});
+  const [selectedMenu, setSelectedMenu] = useState<SelectedMenu>(
+    {} as SelectedMenu
+  );
 
   const menuContextAction = useMemo(
     () => ({
@@ -49,6 +47,7 @@ function MenuProvider({ children }: PropsProvider) {
   );
 
   return (
+    //! Помилка в обох value= (Type '{ onSelectedMenu: React.Dispatch<React.SetStateAction<SelectedMenu>>; }' is not assignable to type 'MenuAction'. Types of property 'onSelectedMenu' are incompatible. Type 'Dispatch<SetStateAction<SelectedMenu>>' is not assignable to type '(menu: { id: MenuIds; }) => void'. Types of parameters 'value' and 'menu' are incompatible. Type '{ id: MenuIds; }' is not assignable to type 'SetStateAction<SelectedMenu>'.ts(2322))
     <MenuActionContext.Provider value={menuContextAction}>
       <MenuSelectedContext.Provider value={menuContextSelected}>
         {children}
@@ -58,7 +57,7 @@ function MenuProvider({ children }: PropsProvider) {
 }
 
 type PropsMenu = {
-  menus: Menu[]; // Додайте вірний тип для меню
+  menus: Menu[];
 };
 
 function MenuComponent({ menus }: PropsMenu) {
